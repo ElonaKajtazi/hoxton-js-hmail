@@ -20,6 +20,7 @@ type Email = {
 };
 type State = {
   emails: Email[];
+  selectedEmail: Email | null;
 };
 const state: State = {
   emails: [
@@ -42,7 +43,7 @@ const state: State = {
       img: "assets/ed.JPG",
       read: false,
     },
-    {
+  {
       from: "Government",
       header: "Time to pay your tax!",
       content:
@@ -51,8 +52,17 @@ const state: State = {
       img: "assets/gov.jpg",
       read: false,
     },
-    // feel free to add more emails here
   ],
+  selectedEmail:    {
+    from: "Ed",
+    header:
+      "Congratulations! You have received a free beaver! Your name will now be displayed in the classroom's beaver list!",
+    content:
+      "Beaver beaver beaver beaver beaver beaver beaver beaver ! Lorem ipsum dolor sit amet consectetur, adipisicing elit. Adipisci quo et assumenda voluptas blanditiis incidunt quia in, accusamus, qui voluptatem porro. Est reiciendis cum a architecto earum voluptatibus vel atque.",
+    emailAddress: "ed@email.com",
+    img: "assets/ed.JPG",
+    read: false,
+  }
 };
 function renderEmailListItem(email: Email, emailListEl: HTMLUListElement) {
   let liEl = document.createElement("li");
@@ -91,39 +101,39 @@ function renderEmailList() {
 
   mainEl.append(titleEl, emailListEl);
 }
-function renderSingleEmail(email: Email, sectionEl: HTMLElement) {}
 function renderEmailDetails() {
   let mainEl = document.querySelector("main");
   if (mainEl === null) return;
   mainEl.textContent = "";
+  if (state.selectedEmail === null) return;
 
   let sectionEl = document.createElement("section");
   sectionEl.className = "single-email";
 
-
-  for (let email of state.emails) {
+ {
     let backButtonEl = document.createElement("button");
     backButtonEl.className = "single-email__button";
-    backButtonEl.textContent = "⬅Back";
+    backButtonEl.textContent = "⬅ Back";
     let divEl = document.createElement("div");
     divEl.className = "single-email__sender-section";
     let imgEl = document.createElement("img");
     imgEl.className = "single-email__image";
-    imgEl.src = email.img;
+    imgEl.src = state.selectedEmail!.img;
     let spanEl = document.createElement("span");
     spanEl.className = "single-email__sender";
-    (spanEl.textContent = email.from), email.emailAddress;
+    spanEl.textContent = state.selectedEmail.from, state.selectedEmail.emailAddress;
     let titleEl = document.createElement("h1");
     titleEl.className = "single-email__header";
-    titleEl.textContent = email.header;
+    titleEl.textContent = state.selectedEmail.header;
     let contentEl = document.createElement("p");
     contentEl.className = "single-email__content";
-    contentEl.textContent = email.content;
+    contentEl.textContent = state.selectedEmail.content;
 
     sectionEl.append(backButtonEl, divEl, titleEl, contentEl);
     divEl.append(imgEl, spanEl);
-  }
+
   mainEl.append(sectionEl);
+ }
 
   //   <section class="single-email">
   //   <button class="single-email__button">⬅Back</button>
@@ -141,7 +151,7 @@ function renderEmailDetails() {
   // </section>
 }
 function render() { 
-  renderEmailList();
-  renderEmailDetails();
+  if(state.selectedEmail === null) renderEmailList();
+  else renderEmailDetails();
 }
 render();
