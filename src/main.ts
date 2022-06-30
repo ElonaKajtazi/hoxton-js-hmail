@@ -1,10 +1,10 @@
 import "./style.css";
 // Using the provided emails and template files:
-// - Create all the state data you need to make your app work
-// - When the app loads, render a list of emails
-// - When a user clicks the email - render the page for that single email
-// - Once the email has been opened at least once - mark it as read
-// - See that search bar? Make it so when a user types something, you only display the emails who's sender's name contains that. (E.g. "nic" should only show Nico's email. "e" should show both Ed's and Government's emails. Take letter case into consideration, too)
+// - Create all the state data you need to make your app work ✅
+// - When the app loads, render a list of emails ✅
+// - When a user clicks the email - render the page for that single email ✅
+// - Once the email has been opened at least once - mark it as read ✅
+// - See that search bar? Make it so when a user types something, you only display the emails who's sender's name contains that. (E.g. "nic" should only show Nico's email. "e" should show both Ed's and Government's emails. Take letter case into consideration, too) ⚒️
 // - Try to make it work when inside the single email view as well! i.e. entering a new search term and hitting enter should take you back to the email list view and show only the emails that match the filter.
 
 // Bonus
@@ -43,7 +43,7 @@ const state: State = {
       img: "assets/ed.JPG",
       read: false,
     },
-  {
+    {
       from: "Government",
       header: "Time to pay your tax!",
       content:
@@ -53,20 +53,23 @@ const state: State = {
       read: false,
     },
   ],
-  selectedEmail:    {
-    from: "Ed",
-    header:
-      "Congratulations! You have received a free beaver! Your name will now be displayed in the classroom's beaver list!",
-    content:
-      "Beaver beaver beaver beaver beaver beaver beaver beaver ! Lorem ipsum dolor sit amet consectetur, adipisicing elit. Adipisci quo et assumenda voluptas blanditiis incidunt quia in, accusamus, qui voluptatem porro. Est reiciendis cum a architecto earum voluptatibus vel atque.",
-    emailAddress: "ed@email.com",
-    img: "assets/ed.JPG",
-    read: false,
-  }
+  selectedEmail: null,
 };
+function selectEmail(email: Email) {
+  state.selectedEmail = email;
+  email.read = true;
+}
+function deselectEmail() {
+  state.selectedEmail = null;
+}
+
 function renderEmailListItem(email: Email, emailListEl: HTMLUListElement) {
   let liEl = document.createElement("li");
   liEl.className = email.read ? "emails-list__item read" : "emails-list__item";
+  liEl.addEventListener("click", () => {
+    selectEmail(email);
+    render();
+  });
   let iconSpanEl = document.createElement("span");
   iconSpanEl.className =
     "emails-list__item__read-icon material-symbols-outlined";
@@ -110,48 +113,36 @@ function renderEmailDetails() {
   let sectionEl = document.createElement("section");
   sectionEl.className = "single-email";
 
- {
-    let backButtonEl = document.createElement("button");
-    backButtonEl.className = "single-email__button";
-    backButtonEl.textContent = "⬅ Back";
-    let divEl = document.createElement("div");
-    divEl.className = "single-email__sender-section";
-    let imgEl = document.createElement("img");
-    imgEl.className = "single-email__image";
-    imgEl.src = state.selectedEmail!.img;
-    let spanEl = document.createElement("span");
-    spanEl.className = "single-email__sender";
-    spanEl.textContent = state.selectedEmail.from, state.selectedEmail.emailAddress;
-    let titleEl = document.createElement("h1");
-    titleEl.className = "single-email__header";
-    titleEl.textContent = state.selectedEmail.header;
-    let contentEl = document.createElement("p");
-    contentEl.className = "single-email__content";
-    contentEl.textContent = state.selectedEmail.content;
+  let backButtonEl = document.createElement("button");
+  backButtonEl.className = "single-email__button";
+  backButtonEl.textContent = "⬅ Back";
+  backButtonEl.addEventListener("click", () => {
+    deselectEmail();
+    render();
+  });
+  let divEl = document.createElement("div");
+  divEl.className = "single-email__sender-section";
+  let imgEl = document.createElement("img");
+  imgEl.className = "single-email__image";
+  imgEl.src = state.selectedEmail!.img;
+  let spanEl = document.createElement("span");
+  spanEl.className = "single-email__sender";
+  (spanEl.textContent = state.selectedEmail.from),
+    state.selectedEmail.emailAddress;
+  let titleEl = document.createElement("h1");
+  titleEl.className = "single-email__header";
+  titleEl.textContent = state.selectedEmail.header;
+  let contentEl = document.createElement("p");
+  contentEl.className = "single-email__content";
+  contentEl.textContent = state.selectedEmail.content;
 
-    sectionEl.append(backButtonEl, divEl, titleEl, contentEl);
-    divEl.append(imgEl, spanEl);
+  sectionEl.append(backButtonEl, divEl, titleEl, contentEl);
+  divEl.append(imgEl, spanEl);
 
   mainEl.append(sectionEl);
- }
-
-  //   <section class="single-email">
-  //   <button class="single-email__button">⬅Back</button>
-  //   <div class="single-email__sender-section">
-  //     <img class="single-email__image" src="assets/nico.JPG" />
-  //     <span class="single-email__sender">Nico (nico@email.com)</span>
-  //   </div>
-  //   <h1 class="single-email__header">Link to today's video and slides is up!</h1>
-  //   <p class="single-email__content">
-  //     Link is up and you know where to find it! Lorem ipsum dolor sit amet
-  //     consectetur, adipisicing elit. Adipisci quo et assumenda voluptas blanditiis
-  //     incidunt quia in, accusamus, qui voluptatem porro. Est reiciendis cum a
-  //     architecto earum voluptatibus vel atque.
-  //   </p>
-  // </section>
 }
-function render() { 
-  if(state.selectedEmail === null) renderEmailList();
+function render() {
+  if (state.selectedEmail === null) renderEmailList();
   else renderEmailDetails();
 }
 render();
