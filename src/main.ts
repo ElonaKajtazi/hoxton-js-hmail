@@ -4,11 +4,8 @@ import "./style.css";
 // - When the app loads, render a list of emails ✅
 // - When a user clicks the email - render the page for that single email ✅
 // - Once the email has been opened at least once - mark it as read ✅
-// - See that search bar? Make it so when a user types something, you only display the emails who's sender's name contains that. (E.g. "nic" should only show Nico's email. "e" should show both Ed's and Government's emails. Take letter case into consideration, too) ⚒️ ❔
-// - Try to make it work when inside the single email view as well! i.e. entering a new search term and hitting enter should take you back to the email list view and show only the emails that match the filter.                  ❌
-
-// Bonus
-// - We know enough to add our own features. Let's add buttons to delete email, create new emails, etc 🙂
+// - See that search bar? Make it so when a user types something, you only display the emails who's sender's name contains that. (E.g. "nic" should only show Nico's email. "e" should show both Ed's and Government's emails. Take letter case into consideration, too) ✅
+// - Try to make it work when inside the single email view as well! i.e. entering a new search term and hitting enter should take you back to the email list view and show only the emails that match the filter. ✅
 
 type Email = {
   from: string;
@@ -20,8 +17,9 @@ type Email = {
 };
 type State = {
   emails: Email[];
-  selectedEmail: Email | null;
+  show: "emails" | "details" | "new-email";
   filter: string;
+  selectedEmail: Email | null;
 };
 const state: State = {
   emails: [
@@ -55,6 +53,7 @@ const state: State = {
     },
   ],
   selectedEmail: null,
+  show: "emails",
   filter: "",
 };
 function selectEmail(email: Email) {
@@ -63,6 +62,7 @@ function selectEmail(email: Email) {
 }
 function deselectEmail() {
   state.selectedEmail = null;
+  state.show = "details";
 }
 function getFilteredEmails() {
   return state.emails.filter(
@@ -71,7 +71,6 @@ function getFilteredEmails() {
       email.from.toLowerCase().includes(state.filter.toLowerCase()) ||
       email.header.toLowerCase().includes(state.filter.toLowerCase()) ||
       email.emailAddress.toLowerCase().includes(state.filter.toLowerCase())
-
   );
 }
 function renderEmailListItem(email: Email, emailListEl: HTMLUListElement) {
@@ -157,7 +156,6 @@ function render() {
   else renderEmailDetails();
 }
 
-// I NEED TO FIGURE THIS OUT!!!
 function renderFilter() {
   let inputEl = document.querySelector<HTMLInputElement>(".filter-input");
   if (inputEl) {
@@ -165,11 +163,13 @@ function renderFilter() {
       if (inputEl === null) return;
       if (event.key !== "Enter") return;
       state.filter = inputEl.value;
+      state.show = "emails";
+      state.selectedEmail = null;
       render();
     });
   }
 }
 
-renderFilter();                                                                                                                            
+renderFilter();
 
 render();
